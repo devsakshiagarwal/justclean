@@ -1,6 +1,7 @@
 plugins {
   id 'com.android.application'
   id 'kotlin-android'
+  id 'kotlin-android-extensions'
   id 'kotlin-kapt'
   id 'dagger.hilt.android.plugin'
 }
@@ -21,9 +22,19 @@ android {
   buildTypes {
     release {
       minifyEnabled true
+      shrinkResources true
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
           'proguard-rules.pro'
     }
+    debug {
+      minifyEnabled false
+      shrinkResources false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+          'proguard-rules-debug.pro', 'proguard-rules.pro'
+    }
+  }
+  buildFeatures {
+    dataBinding = true
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -43,6 +54,9 @@ dependencies {
   // kotlin
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation 'androidx.core:core-ktx:1.3.2'
+
+  // Data Binding
+  kapt "com.android.databinding:compiler:$databinding_version"
 
   // lifecycle and viewModel
   implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_ktx_version"
