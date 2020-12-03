@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,8 +45,11 @@ class PostFragment : Fragment(), OnPostClickListener {
   }
 
   override fun onPostClick(post: Post) {
-    CommentFragment.newInstance(post.id, post.body)
-      .show(activity!!.supportFragmentManager, "comment_fragment")
+    val ft: FragmentTransaction =
+      activity!!.supportFragmentManager.beginTransaction()
+    ft.replace(R.id.cl_main, CommentFragment.newInstance(post.id, post.body))
+    ft.addToBackStack("main_fragment")
+    ft.commit()
   }
 
   private fun initViews() {

@@ -2,4 +2,8 @@
   <string name="app_name">JustClean</string>
   <string name="tab_text_1">Posts</string>
   <string name="tab_text_2">Favorites</string>
+  <string name="favorite">Add to Favorite</string>
+  <string name="un_favorite">Remove from Favorite</string>
+  <string name="err_no_internet">App is not connected to internet.
+    Showing local data.</string>
 </resources>

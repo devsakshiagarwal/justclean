@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
-import com.agarwal.justclean.arch.BaseDialogFragment
 import com.agarwal.justclean.arch.network.Status
 import com.agarwal.justclean.model.schema.Comment
 import com.agarwal.justclean.ui.main.MainViewModel
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_post.*
 import kotlinx.android.synthetic.main.layout_progress_bar.progress_bar
 import kotlinx.android.synthetic.main.layout_toolbar.*
 
-class CommentFragment : BaseDialogFragment() {
+class CommentFragment : Fragment() {
   private lateinit var mainViewModel: MainViewModel
   private var postId = 0
   private var postName = ""
@@ -36,7 +36,6 @@ class CommentFragment : BaseDialogFragment() {
   override fun onCreateView(inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?): View? {
-    container?.removeAllViews()
     return inflater.inflate(R.layout.fragment_comment, container, false)
   }
 
@@ -56,7 +55,10 @@ class CommentFragment : BaseDialogFragment() {
   private fun initViews() {
     tool_bar.title = postName
     tool_bar.setNavigationIcon(R.drawable.ic_back)
-    tool_bar.setNavigationOnClickListener { dismiss() }
+    tool_bar.setNavigationOnClickListener {
+      requireActivity().onBackPressed()
+    }
+    button_favorite.setOnClickListener {  }
     mainViewModel.getComments(postId)
   }
 
@@ -67,7 +69,8 @@ class CommentFragment : BaseDialogFragment() {
           setData(it.data!!)
         }
         Status.LOADING -> {
-          //progress_bar.visibility = View.VISIBLE
+          // TODO : to fix no context on second time
+          progress_bar.visibility = View.VISIBLE
         }
         Status.ERROR -> {
           showError()
@@ -77,11 +80,11 @@ class CommentFragment : BaseDialogFragment() {
   }
 
   private fun setData(commentList: List<Comment>) {
-    //progress_bar.visibility = View.GONE
+    progress_bar.visibility = View.GONE
     val commentAdapter = CommentAdapter()
     commentAdapter.setComments(commentList)
     rv_comment.apply {
-      layoutManager = LinearLayoutManager(requireActivity())
+      layoutManager = LinearLayoutManager(requireContext())
       adapter = commentAdapter
     }
   }
