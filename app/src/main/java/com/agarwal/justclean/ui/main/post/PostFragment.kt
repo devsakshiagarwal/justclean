@@ -10,13 +10,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
-import com.agarwal.justclean.arch.network.Status.ERROR
-import com.agarwal.justclean.arch.network.Status.LOADING
-import com.agarwal.justclean.arch.network.Status.SUCCESS
 import com.agarwal.justclean.model.schema.Post
 import com.agarwal.justclean.ui.main.MainViewModel
 import com.agarwal.justclean.ui.main.comment.CommentFragment
 import com.agarwal.justclean.ui.main.post.PostAdapter.OnPostClickListener
+import com.agarwal.justclean.utils.Response
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_post.constraintLayout
 import kotlinx.android.synthetic.main.fragment_post.rv_posts
@@ -53,21 +51,18 @@ class PostFragment : Fragment(), OnPostClickListener {
   }
 
   private fun initViews() {
-    mainViewModel.getPosts()
   }
 
   private fun observeLiveData() {
-    mainViewModel.postsLiveData.observe(requireActivity(), Observer {
+    mainViewModel.postList.observe(requireActivity(), Observer {
       when (it.status) {
-        SUCCESS -> {
+        Response.Status.SUCCESS -> {
           setData(it.data!!)
         }
-        LOADING -> {
-          progress_bar.visibility = View.VISIBLE
+        Response.Status.ERROR -> {
+          showError(it.message!!)
         }
-        ERROR -> {
-          showError()
-        }
+        Response.Status.LOADING -> progress_bar.visibility = View.VISIBLE
       }
     })
   }
@@ -82,10 +77,9 @@ class PostFragment : Fragment(), OnPostClickListener {
     }
   }
 
-  private fun showError() {
+  private fun showError(errorMessage: String) {
     progress_bar.visibility = View.GONE
-    Snackbar.make(constraintLayout, "Something went wrong",
-      Snackbar.LENGTH_SHORT)
+    Snackbar.make(constraintLayout, errorMessage, Snackbar.LENGTH_SHORT)
       .show()
   }
 }

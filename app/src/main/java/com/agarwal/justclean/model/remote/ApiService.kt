@@ -1,4 +1,4 @@
-package com.agarwal.justclean.model.api
+package com.agarwal.justclean.model.remote
 
 import com.agarwal.justclean.model.schema.Comment
 import com.agarwal.justclean.model.schema.Post

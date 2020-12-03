@@ -9,15 +9,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
-import com.agarwal.justclean.arch.network.Status
 import com.agarwal.justclean.model.schema.Comment
 import com.agarwal.justclean.ui.main.MainViewModel
+import com.agarwal.justclean.utils.Response
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_comment.*
-import kotlinx.android.synthetic.main.fragment_post.*
 import kotlinx.android.synthetic.main.layout_progress_bar.progress_bar
 import kotlinx.android.synthetic.main.layout_toolbar.*
 
+@AndroidEntryPoint
 class CommentFragment : Fragment() {
   private lateinit var mainViewModel: MainViewModel
   private var postId = 0
@@ -63,18 +64,15 @@ class CommentFragment : Fragment() {
   }
 
   private fun observeLiveData() {
-    mainViewModel.commentsLiveData.observe(requireActivity(), Observer {
+    mainViewModel.commentList.observe(requireActivity(), Observer {
       when (it.status) {
-        Status.SUCCESS -> {
+        Response.Status.SUCCESS -> {
           setData(it.data!!)
         }
-        Status.LOADING -> {
-          // TODO : to fix no context on second time
-          progress_bar.visibility = View.VISIBLE
+        Response.Status.ERROR -> {
+          showError(it.message!!)
         }
-        Status.ERROR -> {
-          showError()
-        }
+        Response.Status.LOADING -> progress_bar.visibility = View.VISIBLE
       }
     })
   }
@@ -89,9 +87,9 @@ class CommentFragment : Fragment() {
     }
   }
 
-  private fun showError() {
+  private fun showError(errorMessage: String) {
     progress_bar.visibility = View.GONE
-    Snackbar.make(constraintLayout, "Something went wrong",
+    Snackbar.make(cl_comment, errorMessage,
       Snackbar.LENGTH_SHORT)
       .show()
   }

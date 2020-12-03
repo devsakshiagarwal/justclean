@@ -1,18 +1,21 @@
 package com.agarwal.justclean.model.repository
 
-import com.agarwal.justclean.model.api.ApiHelper
-import com.agarwal.justclean.model.dao.PostDao
-import com.agarwal.justclean.model.schema.Post
+import com.agarwal.justclean.model.local.CommentDao
+import com.agarwal.justclean.model.local.PostDao
+import com.agarwal.justclean.model.remote.RemoteDataSource
+import com.agarwal.justclean.utils.performGetOperation
 import javax.inject.Inject
 
-class PostRepo @Inject constructor(private val apiHelper: ApiHelper,
-  private val postDao: PostDao) {
-  suspend fun getPosts() = apiHelper.getPosts()
+class PostRepo @Inject constructor(private val remoteDataSource: RemoteDataSource,
+  private val localDataSourcePost: PostDao,
+  private val localDataSourceComment: CommentDao) {
+  fun getPosts() =
+    performGetOperation(databaseQuery = { localDataSourcePost.getAllPosts() },
+      networkCall = { remoteDataSource.getPosts() },
+      saveCallResult = { localDataSourcePost.insertAllPost(it) })
 
-  fun addOrRemoveFavorite(post: Post) {
-    post.isFavorite = !post.isFavorite
-    postDao.insertPost(post)
-  }
-
-  suspend fun getComments(postId: Int) = apiHelper.getComments(postId)
+  fun getComments(postId: Int) = performGetOperation(databaseQuery = {
+    localDataSourceComment.getAllComments(postId)
+  }, networkCall = { remoteDataSource.getComments(postId) },
+    saveCallResult = { localDataSourceComment.insertAllComments(it) })
 }
