@@ -28,7 +28,7 @@ class MainViewModel @ViewModelInject constructor(private val postRepo: PostRepo)
       }
   }
 
-  fun getComments(postId: String) = viewModelScope.launch {
+  fun getComments(postId: Int) = viewModelScope.launch {
     commentsLiveData.value = Response.loading(null)
     postRepo.getComments(postId)
       .let {

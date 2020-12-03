@@ -11,5 +11,5 @@ interface ApiService {
   @GET(Urls.URL_POST) suspend fun getPosts(): Response<List<Post>>
 
   @GET(Urls.URL_COMMENTS) suspend fun getComments(@Path(
-    "post_id") postId: String): Response<List<Comment>>
+    "post_id") postId: Int): Response<List<Comment>>
 }

@@ -6,5 +6,5 @@ import javax.inject.Inject
 class PostRepo @Inject constructor(private val apiHelper: ApiHelper) {
   suspend fun getPosts() = apiHelper.getPosts()
 
-  suspend fun getComments(postId: String) = apiHelper.getComments(postId)
+  suspend fun getComments(postId: Int) = apiHelper.getComments(postId)
 }
