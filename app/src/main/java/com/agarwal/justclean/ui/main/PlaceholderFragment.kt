@@ -14,14 +14,11 @@ import com.agarwal.justclean.R
  * A placeholder fragment containing a simple view.
  */
 class PlaceholderFragment : Fragment() {
-  private lateinit var pageViewModel: PageViewModel
+  private lateinit var mainViewModel: MainViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    pageViewModel = ViewModelProvider(this).get(PageViewModel::class.java)
-      .apply {
-        setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
-      }
+    mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
   }
 
   override fun onCreateView(inflater: LayoutInflater,
@@ -29,9 +26,6 @@ class PlaceholderFragment : Fragment() {
     savedInstanceState: Bundle?): View? {
     val root = inflater.inflate(R.layout.fragment_main, container, false)
     val textView: TextView = root.findViewById(R.id.section_label)
-    pageViewModel.text.observe(this, Observer<String> {
-      textView.text = it
-    })
     return root
   }
 
