@@ -48,9 +48,9 @@ class CommentFragment : Fragment() {
     }
     handleFavorite()
     button_favorite.setOnClickListener {
-      handleFavorite()
       post.isFavorite = !post.isFavorite
       commentViewModel.updatePost(post)
+      handleFavorite()
     }
     commentViewModel.getComments(post.id)
   }

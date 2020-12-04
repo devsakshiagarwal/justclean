@@ -13,7 +13,7 @@ import com.agarwal.justclean.model.schema.Post
 interface PostDao {
   @Query("SELECT * FROM post") fun getAllPosts(): LiveData<List<Post>>
 
-  @Query("SELECT * FROM post where isFavorite = '1'")
+  @Query("SELECT * FROM post where isFavorite = 1")
   fun getAllFavoritePosts(): LiveData<List<Post>>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
