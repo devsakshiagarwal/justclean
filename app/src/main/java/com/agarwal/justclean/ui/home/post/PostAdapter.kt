@@ -1,4 +1,4 @@
-package com.agarwal.justclean.ui.main.post
+package com.agarwal.justclean.ui.home.post
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agarwal.justclean.R
 import com.agarwal.justclean.model.schema.Post
-import com.agarwal.justclean.ui.main.post.PostAdapter.PostViewHolder
+import com.agarwal.justclean.ui.home.post.PostAdapter.PostViewHolder
 
 class PostAdapter(private val onPostClickListener: OnPostClickListener) :
   RecyclerView.Adapter<PostViewHolder>() {

@@ -1,4 +1,4 @@
-package com.agarwal.justclean.ui.main.comment
+package com.agarwal.justclean.ui.comment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agarwal.justclean.R
 import com.agarwal.justclean.model.schema.Comment
-import com.agarwal.justclean.ui.main.comment.CommentAdapter.CommentViewHolder
+import com.agarwal.justclean.ui.comment.CommentAdapter.CommentViewHolder
 
 class CommentAdapter : RecyclerView.Adapter<CommentViewHolder>() {
   private lateinit var commentList: List<Comment>

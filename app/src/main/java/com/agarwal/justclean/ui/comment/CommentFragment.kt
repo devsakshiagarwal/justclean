@@ -1,38 +1,27 @@
-package com.agarwal.justclean.ui.main.comment
+package com.agarwal.justclean.ui.comment
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
 import com.agarwal.justclean.model.schema.Comment
-import com.agarwal.justclean.ui.main.MainViewModel
+import com.agarwal.justclean.utils.InternetConnectionUtil
 import com.agarwal.justclean.utils.Response
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_comment.*
 import kotlinx.android.synthetic.main.layout_progress_bar.progress_bar
-import kotlinx.android.synthetic.main.layout_toolbar.*
 
 @AndroidEntryPoint
 class CommentFragment : Fragment() {
-  private lateinit var mainViewModel: MainViewModel
+  private lateinit var commentViewModel: CommentViewModel
   private var postId = 0
-  private var postName = ""
-
-  companion object {
-    @JvmStatic fun newInstance(postId: Int,
-      postName: String) = CommentFragment().apply {
-      arguments = Bundle().apply {
-        putInt("post_id", postId)
-        putString("post_name", postName)
-      }
-    }
-  }
 
   override fun onCreateView(inflater: LayoutInflater,
     container: ViewGroup?,
@@ -43,28 +32,25 @@ class CommentFragment : Fragment() {
   override fun onViewCreated(view: View,
     savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    mainViewModel =
-      ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+    commentViewModel = ViewModelProvider(this).get(CommentViewModel::class.java)
     arguments?.let {
-      postId = it.getInt("post_id")
-      postName = it.getString("post_name", "")
+      postId = it.getInt("id")
     }
     initViews()
     observeLiveData()
   }
 
   private fun initViews() {
-    tool_bar.title = postName
-    tool_bar.setNavigationIcon(R.drawable.ic_back)
-    tool_bar.setNavigationOnClickListener {
-      requireActivity().onBackPressed()
+    if (!InternetConnectionUtil.isConnectedToInternet(
+        requireActivity() as AppCompatActivity)) {
+      showError(getString(R.string.err_no_internet))
     }
-    button_favorite.setOnClickListener {  }
-    mainViewModel.getComments(postId)
+    button_favorite.setOnClickListener { }
+    commentViewModel.getComments(postId)
   }
 
   private fun observeLiveData() {
-    mainViewModel.commentList.observe(requireActivity(), Observer {
+    commentViewModel.commentList.observe(viewLifecycleOwner, Observer {
       when (it.status) {
         Response.Status.SUCCESS -> {
           setData(it.data!!)
@@ -89,8 +75,14 @@ class CommentFragment : Fragment() {
 
   private fun showError(errorMessage: String) {
     progress_bar.visibility = View.GONE
-    Snackbar.make(cl_comment, errorMessage,
-      Snackbar.LENGTH_SHORT)
-      .show()
+    if (!InternetConnectionUtil.isConnectedToInternet(
+        requireActivity() as AppCompatActivity)) {
+      Snackbar.make(cl_comment, getString(R.string.err_no_internet),
+        Snackbar.LENGTH_SHORT)
+        .show()
+    } else {
+      Snackbar.make(cl_comment, errorMessage, Snackbar.LENGTH_SHORT)
+        .show()
+    }
   }
 }

@@ -9,7 +9,7 @@ import com.agarwal.justclean.model.schema.Comment
 
 @Dao
 interface CommentDao {
-  @Query("SELECT * FROM comment WHERE id = :id")
+  @Query("SELECT * FROM comment WHERE postId = :id")
   fun getAllComments(id: Int): LiveData<List<Comment>>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)

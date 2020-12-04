@@ -1,19 +1,21 @@
-package com.agarwal.justclean.ui.main.post
+package com.agarwal.justclean.ui.home.post
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
 import com.agarwal.justclean.model.schema.Post
-import com.agarwal.justclean.ui.main.MainViewModel
-import com.agarwal.justclean.ui.main.comment.CommentFragment
-import com.agarwal.justclean.ui.main.post.PostAdapter.OnPostClickListener
+import com.agarwal.justclean.ui.home.HomeViewModel
+import com.agarwal.justclean.ui.home.post.PostAdapter.OnPostClickListener
+import com.agarwal.justclean.utils.InternetConnectionUtil
 import com.agarwal.justclean.utils.Response
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_post.constraintLayout
@@ -21,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_post.rv_posts
 import kotlinx.android.synthetic.main.layout_progress_bar.progress_bar
 
 class PostFragment : Fragment(), OnPostClickListener {
-  private lateinit var mainViewModel: MainViewModel
+  private lateinit var homeViewModel: HomeViewModel
 
   companion object {
     @JvmStatic fun newInstance() = PostFragment()
@@ -36,25 +38,18 @@ class PostFragment : Fragment(), OnPostClickListener {
   override fun onViewCreated(view: View,
     savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    mainViewModel =
-      ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-    initViews()
+    homeViewModel =
+      ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
     observeLiveData()
   }
 
   override fun onPostClick(post: Post) {
-    val ft: FragmentTransaction =
-      activity!!.supportFragmentManager.beginTransaction()
-    ft.replace(R.id.cl_main, CommentFragment.newInstance(post.id, post.body))
-    ft.addToBackStack("main_fragment")
-    ft.commit()
-  }
-
-  private fun initViews() {
+    findNavController().navigate(R.id.commentFragment,
+      bundleOf("id" to post.id))
   }
 
   private fun observeLiveData() {
-    mainViewModel.postList.observe(requireActivity(), Observer {
+    homeViewModel.postList.observe(requireActivity(), Observer {
       when (it.status) {
         Response.Status.SUCCESS -> {
           setData(it.data!!)
@@ -79,7 +74,14 @@ class PostFragment : Fragment(), OnPostClickListener {
 
   private fun showError(errorMessage: String) {
     progress_bar.visibility = View.GONE
-    Snackbar.make(constraintLayout, errorMessage, Snackbar.LENGTH_SHORT)
-      .show()
+    if (!InternetConnectionUtil.isConnectedToInternet(
+        requireActivity() as AppCompatActivity)) {
+      Snackbar.make(constraintLayout, getString(R.string.err_no_internet),
+        Snackbar.LENGTH_SHORT)
+        .show()
+    } else {
+      Snackbar.make(constraintLayout, errorMessage, Snackbar.LENGTH_SHORT)
+        .show()
+    }
   }
 }

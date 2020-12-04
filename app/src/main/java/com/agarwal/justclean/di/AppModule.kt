@@ -7,6 +7,7 @@ import com.agarwal.justclean.model.local.PostDao
 import com.agarwal.justclean.model.local.AppDatabase
 import com.agarwal.justclean.model.local.CommentDao
 import com.agarwal.justclean.model.remote.RemoteDataSource
+import com.agarwal.justclean.model.repository.CommentRepo
 import com.agarwal.justclean.model.repository.PostRepo
 import dagger.Module
 import dagger.Provides
@@ -57,8 +58,13 @@ object AppModule {
   fun provideAppDatabase(@ApplicationContext appContext: Context) =
     AppDatabase.getDatabase(appContext)
 
-  @Singleton @Provides fun provideRepository(remoteDataSource: RemoteDataSource,
-    localDataSourcePost: PostDao,
+  @Singleton @Provides
+  fun providePostRepository(remoteDataSource: RemoteDataSource,
+    localDataSourcePost: PostDao) =
+    PostRepo(remoteDataSource, localDataSourcePost)
+
+  @Singleton @Provides
+  fun provideCommentRepository(remoteDataSource: RemoteDataSource,
     localDataSourceComment: CommentDao) =
-    PostRepo(remoteDataSource, localDataSourcePost, localDataSourceComment)
+    CommentRepo(remoteDataSource, localDataSourceComment)
 }
