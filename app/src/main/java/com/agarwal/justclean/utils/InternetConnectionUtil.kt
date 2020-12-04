@@ -11,4 +11,8 @@ object InternetConnectionUtil {
     val networkInfo = connectivityManager.activeNetworkInfo
     return networkInfo != null && networkInfo.isConnected
   }
+
+  //method for showing a simple testcase
+  fun giveSum(a: Int,
+    b: Int) = a + b
 }
