@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
 import com.agarwal.justclean.model.schema.Comment
+import com.agarwal.justclean.model.schema.Post
 import com.agarwal.justclean.utils.InternetConnectionUtil
 import com.agarwal.justclean.utils.Response
 import com.google.android.material.snackbar.Snackbar
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.layout_progress_bar.progress_bar
 @AndroidEntryPoint
 class CommentFragment : Fragment() {
   private lateinit var commentViewModel: CommentViewModel
-  private var postId = 0
+  private var post = Post()
 
   override fun onCreateView(inflater: LayoutInflater,
     container: ViewGroup?,
@@ -34,7 +35,7 @@ class CommentFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     commentViewModel = ViewModelProvider(this).get(CommentViewModel::class.java)
     arguments?.let {
-      postId = it.getInt("id")
+      post = it.getParcelable("post")!!
     }
     initViews()
     observeLiveData()
@@ -45,8 +46,21 @@ class CommentFragment : Fragment() {
         requireActivity() as AppCompatActivity)) {
       showError(getString(R.string.err_no_internet))
     }
-    button_favorite.setOnClickListener { }
-    commentViewModel.getComments(postId)
+    handleFavorite()
+    button_favorite.setOnClickListener {
+      handleFavorite()
+      post.isFavorite = !post.isFavorite
+      commentViewModel.updatePost(post)
+    }
+    commentViewModel.getComments(post.id)
+  }
+
+  private fun handleFavorite() {
+    if (post.isFavorite) {
+      button_favorite.text = getString(R.string.un_favorite)
+    } else {
+      button_favorite.text = getString(R.string.favorite)
+    }
   }
 
   private fun observeLiveData() {

@@ -11,14 +11,16 @@ private val TAB_TITLES = arrayOf(R.string.tab_text_1, R.string.tab_text_2)
 
 class MainPagerAdapter(private val context: Context,
   fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
   override fun getItem(position: Int): Fragment {
-    return PostFragment.newInstance()
+    return when (position) {
+      0 -> PostFragment.newInstance(false)
+      1 -> PostFragment.newInstance(true)
+      else -> PostFragment.newInstance(false)
+    }
   }
 
   override fun getPageTitle(position: Int): CharSequence? {
-    return context.resources.getString(
-      TAB_TITLES[position])
+    return context.resources.getString(TAB_TITLES[position])
   }
 
   override fun getCount(): Int {

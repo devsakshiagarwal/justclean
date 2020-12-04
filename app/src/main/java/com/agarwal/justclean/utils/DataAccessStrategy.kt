@@ -23,3 +23,20 @@ fun <T, A> performGetOperation(databaseQuery: () -> LiveData<T>,
       emitSource(source)
     }
   }
+
+fun <T, A> performDbOperation(databaseQuery: () -> LiveData<T>,
+  networkCall: suspend () -> Response<A>,
+  saveCallResult: suspend (A) -> Unit): LiveData<Response<T>> =
+  liveData(Dispatchers.IO) {
+    emit(Response.loading())
+    val source = databaseQuery.invoke()
+      .map { Response.success(it) }
+    emitSource(source)
+    val responseStatus = networkCall.invoke()
+    if (responseStatus.status == SUCCESS) {
+      saveCallResult(responseStatus.data!!)
+    } else if (responseStatus.status == ERROR) {
+      emit(Response.error(responseStatus.message!!))
+      emitSource(source)
+    }
+  }

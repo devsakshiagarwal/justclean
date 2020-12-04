@@ -24,9 +24,14 @@ import kotlinx.android.synthetic.main.layout_progress_bar.progress_bar
 
 class PostFragment : Fragment(), OnPostClickListener {
   private lateinit var homeViewModel: HomeViewModel
+  private var isFavorite = false
 
   companion object {
-    @JvmStatic fun newInstance() = PostFragment()
+    @JvmStatic fun newInstance(isFavorite: Boolean) = PostFragment().apply {
+      arguments = Bundle().apply {
+        putBoolean("is_fav", isFavorite)
+      }
+    }
   }
 
   override fun onCreateView(inflater: LayoutInflater,
@@ -38,6 +43,7 @@ class PostFragment : Fragment(), OnPostClickListener {
   override fun onViewCreated(view: View,
     savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    isFavorite = arguments?.getBoolean("is_fav", false)!!
     homeViewModel =
       ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
     observeLiveData()
@@ -45,21 +51,27 @@ class PostFragment : Fragment(), OnPostClickListener {
 
   override fun onPostClick(post: Post) {
     findNavController().navigate(R.id.commentFragment,
-      bundleOf("id" to post.id))
+      bundleOf("post" to post))
   }
 
   private fun observeLiveData() {
-    homeViewModel.postList.observe(requireActivity(), Observer {
-      when (it.status) {
-        Response.Status.SUCCESS -> {
-          setData(it.data!!)
+    if (isFavorite) {
+      homeViewModel.favoriteList.observe(viewLifecycleOwner, Observer {
+        setData(it)
+      })
+    } else {
+      homeViewModel.postList.observe(viewLifecycleOwner, Observer {
+        when (it.status) {
+          Response.Status.SUCCESS -> {
+            setData(it.data!!)
+          }
+          Response.Status.ERROR -> {
+            showError(it.message!!)
+          }
+          Response.Status.LOADING -> progress_bar.visibility = View.VISIBLE
         }
-        Response.Status.ERROR -> {
-          showError(it.message!!)
-        }
-        Response.Status.LOADING -> progress_bar.visibility = View.VISIBLE
-      }
-    })
+      })
+    }
   }
 
   private fun setData(postList: List<Post>) {

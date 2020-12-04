@@ -6,4 +6,5 @@ import com.agarwal.justclean.model.repository.PostRepo
 
 class HomeViewModel @ViewModelInject constructor(postRepo: PostRepo) : ViewModel() {
   val postList = postRepo.getPosts()
+  val favoriteList = postRepo.getFavorites()
 }
