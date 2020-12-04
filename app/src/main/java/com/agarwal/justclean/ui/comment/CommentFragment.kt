@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agarwal.justclean.R
+import com.agarwal.justclean.model.local.SharedPref
 import com.agarwal.justclean.model.schema.Comment
 import com.agarwal.justclean.model.schema.Post
 import com.agarwal.justclean.utils.InternetConnectionUtil
@@ -48,6 +49,10 @@ class CommentFragment : Fragment() {
     }
     handleFavorite()
     button_favorite.setOnClickListener {
+      if (!InternetConnectionUtil.isConnectedToInternet(
+          requireActivity() as AppCompatActivity)) {
+        SharedPref(requireContext()).setUpdate(true)
+      }
       post.isFavorite = !post.isFavorite
       commentViewModel.updatePost(post)
       handleFavorite()

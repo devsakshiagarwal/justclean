@@ -17,4 +17,7 @@ class PostRepo @Inject constructor(private val remoteDataSource: RemoteDataSourc
 
   suspend fun updateFavorite(post: Post) = localDataSourcePost.updatePost(post)
 
+  //virtual function for updating local data to server
+  fun updateLocalData() {}
+
 }
